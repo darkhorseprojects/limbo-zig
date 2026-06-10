@@ -14,8 +14,8 @@ pub fn build(b: *std.Build) void {
     });
 
     lib_mod.addIncludePath(b.path("third_party/limbo/sqlite3/include"));
-    lib_mod.addLibraryPath(b.path("third_party/limbo/target/release"));
-    lib_mod.linkSystemLibrary("turso_sqlite3", .{});
+    const lib_file = if (target.result.os.tag == .windows) "turso_sqlite3.lib" else "libturso_sqlite3.a";
+    lib_mod.addObjectFile(b.path(b.fmt("third_party/limbo/target/release/{s}", .{lib_file})));
     if (target.result.os.tag != .windows) {
         lib_mod.linkSystemLibrary("pthread", .{});
         lib_mod.linkSystemLibrary("dl", .{});
