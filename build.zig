@@ -20,6 +20,11 @@ pub fn build(b: *std.Build) void {
         lib_mod.linkSystemLibrary("pthread", .{});
         lib_mod.linkSystemLibrary("dl", .{});
         lib_mod.linkSystemLibrary("m", .{});
+        if (target.result.os.tag == .macos) {
+            lib_mod.linkFramework("CoreFoundation", .{});
+        } else if (target.result.os.tag == .linux) {
+            lib_mod.linkSystemLibrary("unwind", .{});
+        }
     }
 
     const lib = b.addLibrary(.{
