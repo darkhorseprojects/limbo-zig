@@ -48,6 +48,8 @@ pub fn build(b: *std.Build) void {
     if (is_linux) {
         lib_tests.use_llvm = true;
         lib_tests.use_lld = true;
+    } else if (target.result.os.tag == .windows) {
+        lib_tests.addLinkerArg("/FORCE:MULTIPLE");
     }
     const run_lib_tests = b.addRunArtifact(lib_tests);
     const test_step = b.step("test", "Run tests");
