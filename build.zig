@@ -22,6 +22,10 @@ pub fn build(b: *std.Build) void {
         lib_mod.linkSystemLibrary("m", .{});
         if (target.result.os.tag == .macos) {
             lib_mod.linkFramework("CoreFoundation", .{});
+            const maybe_sysroot = b.sysroot orelse std.zig.system.darwin.getSdk(b.allocator, b.graph.io, &target.result);
+            if (maybe_sysroot) |sysroot| {
+                lib_mod.addFrameworkPath(.{ .cwd_relative = b.fmt("{s}/System/Library/Frameworks", .{sysroot}) });
+            }
         } else if (target.result.os.tag == .linux) {
             lib_mod.linkSystemLibrary("unwind", .{});
         }
