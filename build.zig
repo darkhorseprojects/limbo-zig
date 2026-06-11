@@ -113,7 +113,12 @@ pub fn build(b: *std.Build) void {
         lib_mod.addObjectFile(b.path(prebuilt_path));
     }
 
-    if (target.result.os.tag != .windows) {
+    if (target.result.os.tag == .windows) {
+        lib_mod.linkSystemLibrary("ws2_32", .{});
+        lib_mod.linkSystemLibrary("userenv", .{});
+        lib_mod.linkSystemLibrary("bcrypt", .{});
+        lib_mod.linkSystemLibrary("advapi32", .{});
+    } else {
         lib_mod.linkSystemLibrary("pthread", .{});
         lib_mod.linkSystemLibrary("dl", .{});
         lib_mod.linkSystemLibrary("m", .{});
