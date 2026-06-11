@@ -19,7 +19,7 @@ jobs:
             rust_target: x86_64-unknown-linux-gnu
             package_dir: x86_64-linux-gnu
             library: libturso_sqlite3.a
-          - os: macos-13
+          - os: macos-14
             rust_target: x86_64-apple-darwin
             package_dir: x86_64-macos
             library: libturso_sqlite3.a
