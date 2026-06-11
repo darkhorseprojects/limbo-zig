@@ -58,7 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: limbo-lib-${{ matrix.package_dir }}
-          path: prebuilt/${{ matrix.package_dir }}/${{ matrix.library }}
+          path: prebuilt
           if-no-files-found: error
 
   source-package:
