@@ -62,6 +62,14 @@ pub fn text(data: []const u8) Text {
     return .{ .data = data };
 }
 
+pub const Blob = struct {
+    data: []const u8,
+};
+
+pub fn blob(data: []const u8) Blob {
+    return .{ .data = data };
+}
+
 pub const Database = struct {
     db: ?*c.sqlite3,
 
@@ -127,6 +135,8 @@ pub fn Statement(comptime ArgsType: type, comptime RowType: type) type {
             const T = @TypeOf(value);
             if (T == Text) {
                 try checkCode(c.sqlite3_bind_text(self.stmt, index, value.data.ptr, @intCast(value.data.len), SQLITE_TRANSIENT));
+            } else if (T == Blob) {
+                try checkCode(c.sqlite3_bind_blob(self.stmt, index, value.data.ptr, @intCast(value.data.len), SQLITE_TRANSIENT));
             } else if (T == []const u8 or T == []u8) {
                 try checkCode(c.sqlite3_bind_text(self.stmt, index, value.ptr, @intCast(value.len), SQLITE_TRANSIENT));
             } else if (T == ?[]const u8 or T == ?[]u8) {
@@ -138,6 +148,12 @@ pub fn Statement(comptime ArgsType: type, comptime RowType: type) type {
             } else if (T == ?Text) {
                 if (value) |val| {
                     try checkCode(c.sqlite3_bind_text(self.stmt, index, val.data.ptr, @intCast(val.data.len), SQLITE_TRANSIENT));
+                } else {
+                    try checkCode(c.sqlite3_bind_null(self.stmt, index));
+                }
+            } else if (T == ?Blob) {
+                if (value) |val| {
+                    try checkCode(c.sqlite3_bind_blob(self.stmt, index, val.data.ptr, @intCast(val.data.len), SQLITE_TRANSIENT));
                 } else {
                     try checkCode(c.sqlite3_bind_null(self.stmt, index));
                 }
@@ -184,6 +200,13 @@ pub fn Statement(comptime ArgsType: type, comptime RowType: type) type {
                     return .{ .data = ptr[0..@intCast(bytes_len)] };
                 }
                 return .{ .data = "" };
+            } else if (T == Blob) {
+                if (c.sqlite3_column_blob(self.stmt, @intCast(col_idx))) |ptr| {
+                    const bytes_len = c.sqlite3_column_bytes(self.stmt, @intCast(col_idx));
+                    const bytes: [*]const u8 = @ptrCast(ptr);
+                    return .{ .data = bytes[0..@intCast(bytes_len)] };
+                }
+                return .{ .data = "" };
             } else if (T == []const u8) {
                 if (c.sqlite3_column_text(self.stmt, @intCast(col_idx))) |ptr| {
                     const bytes_len = c.sqlite3_column_bytes(self.stmt, @intCast(col_idx));
@@ -195,6 +218,14 @@ pub fn Statement(comptime ArgsType: type, comptime RowType: type) type {
                 if (c.sqlite3_column_text(self.stmt, @intCast(col_idx))) |ptr| {
                     const bytes_len = c.sqlite3_column_bytes(self.stmt, @intCast(col_idx));
                     return .{ .data = ptr[0..@intCast(bytes_len)] };
+                }
+                return null;
+            } else if (T == ?Blob) {
+                if (c.sqlite3_column_type(self.stmt, @intCast(col_idx)) == c.SQLITE_NULL) return null;
+                if (c.sqlite3_column_blob(self.stmt, @intCast(col_idx))) |ptr| {
+                    const bytes_len = c.sqlite3_column_bytes(self.stmt, @intCast(col_idx));
+                    const bytes: [*]const u8 = @ptrCast(ptr);
+                    return .{ .data = bytes[0..@intCast(bytes_len)] };
                 }
                 return null;
             } else if (T == ?[]const u8) {
