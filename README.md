@@ -1,5 +1,5 @@
-[![Release](https://github.com/darkhorseprojects/limbo-zig/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/darkhorseprojects/limbo-zig/actions/workflows/release.yml)
-[![License](https://img.shields.io/badge/license-MIT-475569.svg?style=for-the-badge)](LICENSE)
+[![Release](https://badgen.net/github/checks/darkhorseprojects/limbo-zig/main/release.yml?label=Release&icon=github)](https://github.com/darkhorseprojects/limbo-zig/actions/workflows/release.yml)
+[![License](https://badgen.net/github/license/darkhorseprojects/limbo-zig?label=License&color=black&icon=github)](LICENSE)
 
 # limbo-zig
 
